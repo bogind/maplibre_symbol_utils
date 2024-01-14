@@ -1,0 +1,14 @@
+{
+  "name": "maplibre_symbol_tools",
+  "version": "0.0.1",
+  "description": "Utilities for extending MapLibre symbols",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dror Bogin",
+  "license": "ISC",
+  "dependencies": {
+    "maplibre-gl": "^3.6.2"
+  }
+}
