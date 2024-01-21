@@ -2,6 +2,7 @@ import * as maplibre from "maplibre-gl";
 
 /**
  * Creates an image from a [maplibre.Marker](https://docs.mapbox.com/mapbox-gl-js/api/markers/#marker) and adds it to the map.
+ * Meant to be used as an added method to the maplibre.Map class.
  * @param {string} id - The image id, if id already exists, an error will be thrown.
  * @param {maplibre.MarkerOptions} options - The marker creation options.
  * @param {function} callback - The callback function to be called after the image is added to the map.

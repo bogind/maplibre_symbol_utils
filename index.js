@@ -1,6 +1,4 @@
-import * as maplibre from "maplibre-gl";
-import { addMarkerImage,addMarkerImageToMap } from "./AddMarkerImage.js";
+import canvasFill from "./CanvasFill.js";
+import {addMarkerImageToMap, addMarkerImage}  from "./AddMarkerImage.js";
 
-maplibre.Map.prototype.addMarkerImage = addMarkerImage;
-
-export { addMarkerImageToMap };
+export { addMarkerImage, addMarkerImageToMap, canvasFill };
