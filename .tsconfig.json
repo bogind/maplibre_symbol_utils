@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": "./src",
+    "strict": true,
+    "incremental":true,
+    "module": "system",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outFile": "./dist/maplibre_symbol_utils.js",
+    "esModuleInterop": true, 
+    "target": "es5",
+    "moduleResolution": "node",
+    "sourceMap": true
+  },
+  "include": ["src/**/*"]
+}

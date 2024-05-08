@@ -1,29 +1,45 @@
-import * as maplibre from "maplibre-gl";
+//import maplibregl from 'maplibre-gl';
+import {Marker, type MarkerOptions as MapLibreMarkerOptions, 
+    type Map as MapLibreMap} from 'maplibre-gl';
+
+
+/**
+ * Exteneds the MapLibre MarkerOptions to include the map property.
+ * @typedef {Object} ExtendedMarkerOptions
+ * @extends {MarkerOptions}
+ * @property {MapLibreMap} map - The map to add the image to.
+ */
+declare type ExtendedMarkerOptions = MapLibreMarkerOptions & {
+    map: MapLibreMap;
+};
+
+
 
 /**
  * Creates an image from a [maplibre.Marker](https://docs.mapbox.com/mapbox-gl-js/api/markers/#marker) and adds it to the map.
  * Meant to be used as an added method to the maplibre.Map class.
  * @param {string} id - The image id, if id already exists, an error will be thrown.
- * @param {maplibre.MarkerOptions} options - The marker creation options.
- * @param {function} callback - The callback function to be called after the image is added to the map.
+ * @param {ExtendedMarkerOptions} options - The marker creation options.
+ * @param {Function} callback - The callback function to be called after the image is added to the map.
  */
-export function addMarkerImage(id ,options={},callback){
+export function addMarkerImage(id: string ,options:ExtendedMarkerOptions,callback?:Function){
     try {
-        let marker = new maplibregl.Marker(options);
-        let svgDoc;
-      if (!options || !options.element) {
-          svgDoc = marker._element.firstChild;// default marker
-      }else{
-          svgDoc = marker._element; // for SVG elements
-      }
+        let _map = options.map;
+        let marker = new Marker(options);
+            let svgDoc: SVGSVGElement ;
+          if (!options || !options.element) {
+              svgDoc = marker._element.firstChild as SVGSVGElement ;// default marker
+          }else{
+              svgDoc = marker._element as unknown as SVGSVGElement ; // for SVG elements
+          }
 
-      let markerSVG = new XMLSerializer().serializeToString(svgDoc);
-      let markerImg = new Image(svgDoc.width.baseVal.value,svgDoc.height.baseVal.value);
-      markerImg.src = 'data:image/svg+xml;base64,' + window.btoa(markerSVG);
+        let markerSVG = new XMLSerializer().serializeToString(svgDoc);
+        let markerImg = new Image((svgDoc as SVGSVGElement).width.baseVal.value, (svgDoc as SVGSVGElement).height.baseVal.value);
+        markerImg.src = 'data:image/svg+xml;base64,' + window.btoa(markerSVG);
       markerImg.decode()
       .then(() => {
-        if (!this.hasImage(id)){
-            this.addImage(id,markerImg);   
+        if (!_map.hasImage(id)){
+            _map.addImage(id,markerImg);   
         }else{
             throw new Error(`Image with id: "${id}" already exists`)
         }
@@ -44,32 +60,26 @@ export function addMarkerImage(id ,options={},callback){
     }
 }
 
-/**
- * Exteneds the MapLibre MarkerOptions to include the map property.
- * @typedef {Object} ExtendedMarkerOptions
- * @extends {maplibre.MarkerOptions}
- * @property {maplibre.Map} map - The map to add the image to.
- */
+
 
 /**
  * Creates an image from a [maplibre.Marker](https://docs.mapbox.com/mapbox-gl-js/api/markers/#marker) and adds it to a map specified in the options.
  * @param {string} id - The image id, if id already exists, an error will be thrown.
  * @param {ExtendedMarkerOptions} options - Extended MapLibre marker creation options, a `map` value is also required.
- * @param {maplibre.Map} options.map - The map to add the image to.
- * @param {function} callback - The callback function to be called after the image is added to the map. 
+ * @param {MapLibreMap} options.map - The map to add the image to.
+ * @param {Function} callback  - The callback function to be called after the image is added to the map. 
 */
-
-export function addMarkerImageToMap(id ,options={},callback){
+export function addMarkerImageToMap(id: string ,options:ExtendedMarkerOptions,callback?:Function){
     try {
         if(!options.map) throw new Error("Map not defined")
         let map = options.map;
 
-        let marker = new maplibregl.Marker(options);
-        let svgDoc;
+        let marker = new Marker(options);
+        let svgDoc: SVGSVGElement ;
         if (!options || !options.element) {
-            svgDoc = marker._element.firstChild;// default marker
-        }else{
-            svgDoc = marker._element; // for SVG elements
+            svgDoc = marker._element.firstChild as SVGSVGElement ;// default marker
+          }else{
+              svgDoc = marker._element as unknown as SVGSVGElement ; // for SVG elements
         }
 
         let markerSVG = new XMLSerializer().serializeToString(svgDoc);
@@ -94,6 +104,4 @@ export function addMarkerImageToMap(id ,options={},callback){
         console.error(error)
     }
 }
-
-
 

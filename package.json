@@ -1,14 +1,49 @@
 {
-  "name": "maplibre_symbol_tools",
-  "version": "0.0.1",
+  "name": "maplibre_symbol_utils",
+  "version": "0.0.7",
   "description": "Utilities for extending MapLibre symbols",
-  "main": "index.js",
+  "main": "dist/maplibre_symbol_utils.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:tsc": "tsc && tsc --module CommonJS --outDir dist/cjs",
+    "build:rollup": "rollup --config rollup.config.js --bundleConfigAsCjs",
+    "build": "npm run build:tsc && npm run build:rollup"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bogind/maplibre_symbol_utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bogind/maplibre_symbol_utils/issues"
+  },
+  "homepage": "https://github.com/bogind/maplibre_symbol_utils",
+  "keywords": [
+    "maplibre",
+    "image",
+    "symbol",
+    "marker"
+  ],
   "author": "Dror Bogin",
   "license": "ISC",
   "dependencies": {
-    "maplibre-gl": "^3.6.2"
+    "maplibre-gl": "^4.0.0"
+  },
+  "peerDependencies": {
+    "maplibre-gl": "^4.0.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "maplibre-gl": "^4.0.0",
+    "rollup": "^4.17.2",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "typescript": "^5.4.5"
   }
 }
