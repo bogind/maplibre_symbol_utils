@@ -8,6 +8,7 @@ import { type MarkerOptions as MapLibreMarkerOptions, type Map as MapLibreMap } 
 declare type ExtendedMarkerOptions = MapLibreMarkerOptions & {
     map: MapLibreMap;
 };
+export { type ExtendedMarkerOptions };
 /**
  * Creates an image from a [maplibre.Marker](https://docs.mapbox.com/mapbox-gl-js/api/markers/#marker) and adds it to the map.
  * Meant to be used as an added method to the maplibre.Map class.
@@ -24,4 +25,3 @@ export declare function addMarkerImage(id: string, options: ExtendedMarkerOption
  * @param {Function} callback  - The callback function to be called after the image is added to the map.
 */
 export declare function addMarkerImageToMap(id: string, options: ExtendedMarkerOptions, callback?: Function): void;
-export {};

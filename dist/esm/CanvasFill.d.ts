@@ -61,6 +61,15 @@ declare type LineTypeVertical = 'esriSFSVertical' | 'Vertical' | '|';
  */
 declare type LineTypeDiagonalCross = 'esriSFSDiagonalCross' | 'x';
 /**
+ * @typedef {('esriSFSBackwardDiagonal'|'esriSFSForwardDiagonal'|'esriSFSCross'|'esriSFSHorizontal'|'esriSFSVertical'|'esriSFSDiagonalCross')} esriLineType - Line types as defined by esri Simple Fill Symbols (SFS).
+ * @see {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-symbols-SimpleFillSymbol.html#style esri Simple Fill Symbols (SFS)}
+ */
+declare type esriLineType = 'esriSFSBackwardDiagonal' | 'esriSFSForwardDiagonal' | 'esriSFSCross' | 'esriSFSHorizontal' | 'esriSFSVertical' | 'esriSFSDiagonalCross';
+/**
+ * @typedef {(('ForwardSlash'|'/')|('Backslash'|'\\')|('cross'|'+')|('Horizontal'|'-')|('Vertical'|'|')|'x')} simpleLineType - Simplified readable line types.
+ */
+declare type simpleLineType = 'ForwardSlash' | '/' | 'Backslash' | '\\' | 'cross' | '+' | 'Horizontal' | '-' | 'Vertical' | '|' | 'x';
+/**
  * @callback createCanvasFillCallback
  * @param {Object} image - The image created by createCanvasFill.
  */
@@ -108,7 +117,7 @@ export declare class canvasFill {
      * @param {Array<lineOptions>} params.lines - The lines options.
      * @param {createCanvasFillCallback} callback - The callback function to be called after the image is created.
      */
-    constructor(params: fillOptions, callback: createCanvasFillCallback);
+    constructor(params: fillOptions, callback?: createCanvasFillCallback);
     onAdd(map: MapLibreMap): void;
     render(): boolean;
     drawLines(): void;
@@ -123,4 +132,5 @@ export declare class canvasFill {
      */
     checklineType(linetype: string): string | undefined;
 }
+export { type simpleLineType, type esriLineType, type LineTypeDiagonalCross, type LineTypeVertical, type LineTypeHorizontal, type LineTypeCross, type LineTypeBackSlash, type LineTypeForwardSlash, type lineType, type lineOptions, type fillOptions, type createCanvasFillCallback };
 export default canvasFill;

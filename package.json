@@ -1,9 +1,10 @@
 {
   "name": "maplibre_symbol_utils",
-  "version": "0.0.8",
+  "version": "0.1.1",
   "description": "Utilities for extending MapLibre symbols",
   "main": "dist/maplibre_symbol_utils.js",
   "module": "dist/esm/index.js",
+  "types": "dist/cjs/index.d.ts",
   "files": [
     "dist",
     "LICENSE",
@@ -11,9 +12,12 @@
   ],
   "type": "module",
   "scripts": {
-    "build:tsc": "tsc && tsc --module CommonJS --outDir dist/cjs",
+    "build:tsc": "tsc && tsc --module CommonJS --outDir dist/cjs && tsc --module ESNext --outDir dist",
     "build:rollup": "rollup --config rollup.config.js --bundleConfigAsCjs",
-    "build": "npm run build:tsc && npm run build:rollup"
+    "build": "npm run build:tsc && npm run build:rollup",
+    "postbuild": "node postbuild.js",
+    "postbuild:unix": "cp dist/index.d.ts dist/maplibre_symbol_utils.d.ts",
+    "postbuild:win": "copy dist\\index.d.ts dist\\maplibre_symbol_utils.d.ts"
   },
   "repository": {
     "type": "git",
@@ -41,6 +45,7 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "maplibre-gl": "^4.0.0",
+    "os": "^0.1.2",
     "rollup": "^4.17.2",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-typescript2": "^0.36.0",
