@@ -132,7 +132,7 @@ export class canvasFill{
      * @param {Array<lineOptions>} params.lines - The lines options.
      * @param {createCanvasFillCallback} callback - The callback function to be called after the image is created.
      */
-    constructor(params:fillOptions,callback:createCanvasFillCallback){
+    constructor(params:fillOptions,callback?:createCanvasFillCallback){
         try {
     
             if ( !params) throw new Error('fillOptions must be supplied as parameters')
