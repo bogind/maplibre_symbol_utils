@@ -299,6 +299,8 @@ export class canvasFill{
  
 }
 
+export {type simpleLineType, type esriLineType, type LineTypeDiagonalCross, type LineTypeVertical, type LineTypeHorizontal, type LineTypeCross, type LineTypeBackSlash, type LineTypeForwardSlash, type lineType, type lineOptions, type fillOptions, type createCanvasFillCallback};
+
 export default canvasFill;
 
 /**

@@ -13,7 +13,7 @@ declare type ExtendedMarkerOptions = MapLibreMarkerOptions & {
     map: MapLibreMap;
 };
 
-
+export {type ExtendedMarkerOptions};
 
 /**
  * Creates an image from a [maplibre.Marker](https://docs.mapbox.com/mapbox-gl-js/api/markers/#marker) and adds it to the map.
