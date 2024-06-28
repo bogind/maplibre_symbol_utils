@@ -1,6 +1,5 @@
 import {type Map as MapLibreMap, MercatorCoordinate} from 'maplibre-gl';
 import { FilterSpecification, Feature, GeoJSONSource } from 'maplibre-gl';
-
 import { StyleExpression } from '@maplibre/maplibre-gl-style-spec';
 
 
@@ -525,3 +524,5 @@ export class PyramidRoof {
 
     }
 }
+
+export default PyramidRoof;
