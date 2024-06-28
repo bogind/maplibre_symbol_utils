@@ -41,6 +41,8 @@ export class PyramidRoof {
     buffers: { buffer: WebGLBuffer | null; indexBuffer: WebGLBuffer | null; vertexCount: number; }[] | undefined;
     source: GeoJSONSource | undefined;
     _data: GeoJSON.FeatureCollection |  undefined;
+    sides_aPos: number | undefined;
+    private _savedGLState: { currentArrayBuffer: any; currentElementArrayBuffer: any; currentProgram: any; currentDepthTest: any; currentDepthFunc: any; currentPolygonOffsetFill: any; currentPolygonOffsetFactor: any; currentPolygonOffsetUnits: any; currentLineWidth: any; } | undefined;
 
     constructor(params: RoofOptions) {
         this.type = 'custom';
@@ -248,6 +250,11 @@ export class PyramidRoof {
                     gl.linkProgram(this.sidesProgram);
                 }
             }
+
+            if (!this.sidesProgram) {
+                return;
+            }
+            this.sides_aPos = gl.getAttribLocation(this.sidesProgram, 'a_pos');
             
         } catch (error) {
             console.error('Error in createSidesProgram', error);
@@ -318,7 +325,6 @@ export class PyramidRoof {
 
     onAdd(map: MapLibreMap, gl: WebGLRenderingContext) {
         this.map = map;
-        console.log('PyramidRoof.onAdd');
 
         this.createSidesProgram(gl);
         this.source = this.map.getSource(this.sourceName) as GeoJSONSource;
@@ -385,7 +391,137 @@ export class PyramidRoof {
         
     }
 
+    renderSides(gl: WebGLRenderingContext, matrix: Float32Array) {
+        if (!this.sidesProgram) {
+            return;
+        }
+        gl.useProgram(this.sidesProgram);
+        gl.uniformMatrix4fv(
+            gl.getUniformLocation(this.sidesProgram, 'u_matrix'),
+            false,
+            matrix
+        );
+        
+        if(!this.buffers) {
+            return;
+        }
+        for(let item of this.buffers) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, item.buffer);
+            if(this.sides_aPos === undefined) {
+                return;
+            }
+            gl.enableVertexAttribArray(this.sides_aPos);
+            gl.vertexAttribPointer(this.sides_aPos, 3, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, item.vertexCount);
+        }
+    }
+
+    renderEdges(gl: WebGLRenderingContext, matrix: Float32Array) {
+        if (!this.edgesProgram) {
+            return;
+        }
+        gl.useProgram(this.edgesProgram);
+        gl.uniformMatrix4fv(
+            gl.getUniformLocation(this.edgesProgram, 'u_matrix'),
+            false,
+            matrix
+        );
+    
+        // Set the line width
+        gl.lineWidth(this.strokeWidth ?? 1);
+    
+        // Draw the edges
+        if(!this.buffers) {
+            return;
+        }
+        for(let item of this.buffers) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, item.buffer);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, item.indexBuffer);
+            if(this.edges_aPos === undefined) {
+                return;
+            }
+            gl.enableVertexAttribArray(this.edges_aPos);
+            gl.vertexAttribPointer(this.edges_aPos, 3, gl.FLOAT, false, 0, 0);
+            gl.drawElements(gl.LINES, item.vertexCount * 2 - 2, gl.UNSIGNED_SHORT, 0);
+        }
+    }
+
+    private saveGLState(gl: WebGLRenderingContext) {
+        // Save the current WebGL state
+        let currentArrayBuffer = gl.getParameter(gl.ARRAY_BUFFER_BINDING);
+        let currentElementArrayBuffer = gl.getParameter(gl.ELEMENT_ARRAY_BUFFER_BINDING);
+        let currentProgram = gl.getParameter(gl.CURRENT_PROGRAM);
+        let currentDepthTest = gl.getParameter(gl.DEPTH_TEST);
+        let currentDepthFunc = gl.getParameter(gl.DEPTH_FUNC);
+        let currentPolygonOffsetFill = gl.getParameter(gl.POLYGON_OFFSET_FILL);
+        let currentPolygonOffsetFactor = gl.getParameter(gl.POLYGON_OFFSET_FACTOR);
+        let currentPolygonOffsetUnits = gl.getParameter(gl.POLYGON_OFFSET_UNITS);
+        let currentLineWidth = gl.getParameter(gl.LINE_WIDTH);
+        
+        this._savedGLState = {
+            currentArrayBuffer,
+            currentElementArrayBuffer,
+            currentProgram,
+            currentDepthTest,
+            currentDepthFunc,
+            currentPolygonOffsetFill,
+            currentPolygonOffsetFactor,
+            currentPolygonOffsetUnits,
+            currentLineWidth
+        };
+    }
+
+    private restoreGLState(gl: WebGLRenderingContext) {
+        if(!this._savedGLState) {
+            return;
+        }
+        // Restore the saved WebGL state
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._savedGLState.currentArrayBuffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._savedGLState.currentElementArrayBuffer);
+        gl.useProgram(this._savedGLState.currentProgram);
+        if(this._savedGLState.currentDepthTest) {
+            gl.enable(gl.DEPTH_TEST);
+        } else {
+            gl.disable(gl.DEPTH_TEST);
+        }
+        gl.depthFunc(this._savedGLState.currentDepthFunc);
+        if(this._savedGLState.currentPolygonOffsetFill) {
+            gl.enable(gl.POLYGON_OFFSET_FILL);
+        } else {
+            gl.disable(gl.POLYGON_OFFSET_FILL);
+        }
+        gl.polygonOffset(this._savedGLState.currentPolygonOffsetFactor, this._savedGLState.currentPolygonOffsetUnits);
+        gl.lineWidth(this._savedGLState.currentLineWidth);
+    }
+
+
+    onRemove() {
+        console.log('PyramidRoof.onRemove');
+    }
+
     render(gl: WebGLRenderingContext, matrix: Float32Array) {
-        console.log('PyramidRoof.render');
+
+        // Save the current WebGL state
+        this.saveGLState(gl);
+
+        // First pass: render the sides with depth testing enabled
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LESS);
+        gl.depthFunc(gl.LEQUAL);
+        gl.enable(gl.POLYGON_OFFSET_FILL);
+        gl.polygonOffset(-1.0, 1.0);
+        gl.depthRange(0.2, 0.6);
+        
+        this.renderSides(gl, matrix);
+
+        // Second pass: render the edges with depth testing enabled, but only where the depth is greater
+        gl.disable(gl.DEPTH_TEST);
+        gl.disable(gl.POLYGON_OFFSET_FILL);
+        
+        this.renderEdges(gl, matrix);
+
+        // Restore the saved WebGL state
+        this.restoreGLState(gl);
+
     }
 }
