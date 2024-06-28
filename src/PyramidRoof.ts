@@ -34,6 +34,7 @@ export class PyramidRoof {
     strokeOpacity?: number;
     base?: number | StyleExpression | number[] | string[] | StyleExpression[] | string;
     height?: number | StyleExpression | number[] | string[] | StyleExpression[] | string;
+    sidesProgram: WebGLProgram | null | undefined;
 
     constructor(params: RoofOptions) {
         this.type = 'custom';
@@ -188,9 +189,65 @@ export class PyramidRoof {
 
     }
 
+    createSidesProgram(gl: WebGLRenderingContext){
+        try {
+            this.sidesProgram = gl.createProgram();
+
+            // Create GLSL source for vertex shader
+            let sidesVertexSource = `#version 300 es
+            uniform mat4 u_matrix;
+            in vec3 a_pos;
+            void main() {
+                gl_Position = u_matrix * vec4(a_pos, 1.0);
+            }`;
+
+            // Create GLSL source for fragment shader
+            let sidesColor: string | number[] = [0, 0, 0, 1]; 
+            if (this.color) {
+                sidesColor = this.parseColor(this.color) as number[];
+            }
+
+            let sidesFragmentSource = `#version 300 es
+            precision highp float;
+            out vec4 fragColor;
+            void main() {
+                fragColor = vec4(${sidesColor[0]}, ${sidesColor[1]}, ${sidesColor[2]}, ${sidesColor[3]});
+            }`;
+
+            // Create a vertex shader
+            const sidesVertexShader = gl.createShader(gl.VERTEX_SHADER);
+            if (sidesVertexShader) {
+                gl.shaderSource(sidesVertexShader, sidesVertexSource);
+                gl.compileShader(sidesVertexShader);
+            }
+
+            // Create a fragment shader
+            const sidesFragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+            if (sidesFragmentShader) {
+                gl.shaderSource(sidesFragmentShader, sidesFragmentSource);
+                gl.compileShader(sidesFragmentShader);
+            }
+
+            // Link the two shaders into a WebGL program
+            if (sidesVertexShader && sidesFragmentShader) {
+                if (this.sidesProgram) {
+                    gl.attachShader(this.sidesProgram, sidesVertexShader);
+                    gl.attachShader(this.sidesProgram, sidesFragmentShader);
+                    gl.linkProgram(this.sidesProgram);
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error in createSidesProgram', error);
+        }
+        
+    }
+
     onAdd(map: MapLibreMap) {
         this.map = map;
         console.log('PyramidRoof.onAdd');
+
+        
     }
 
     render(gl: WebGLRenderingContext, matrix: Float32Array) {
