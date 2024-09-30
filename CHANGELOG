@@ -1,0 +1,32 @@
+# Changelog
+
+## [Version 0.1.2] - 2024-09-30
+
+### Added
+- LoadMSUImages for creating images from a JSON file or object
+
+
+
+## [Version 0.1.1] - 2024-05-27
+
+### Fixed
+- Fixed issue with canvasFill types not exporting correctly
+
+
+## [Version 0.1.0] - 2024-05-27
+
+### Added
+- addMarkerImageToMap is available
+- canvasFill is available
+
+### Changed
+- 
+
+### Deprecated
+- 
+
+### Removed
+- 
+
+### Fixed
+-

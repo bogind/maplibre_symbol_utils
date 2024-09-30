@@ -1,6 +1,6 @@
 {
   "name": "maplibre_symbol_utils",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Utilities for extending MapLibre symbols",
   "main": "dist/maplibre_symbol_utils.js",
   "module": "dist/esm/index.js",

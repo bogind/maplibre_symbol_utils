@@ -6,6 +6,7 @@ Utility functions for the creation of advanced symbols within MapLibre.
 
 * [canvasFill](#canvasFill)
 * [addMarkerImageToMap](#addMarkerImageToMap)
+* [LoadMSUImages](#LoadMSUImages)
 
 ## Quickstart
 
@@ -17,7 +18,7 @@ You can install it via NPM:
 Then import the utility you want to use via:
 
 ```JavaScript
-import  {addMarkerImageToMap, canvasFill} from 'maplibre_symbol_utils';
+import  {addMarkerImageToMap, canvasFill, LoadMSUImages} from 'maplibre_symbol_utils';
 
 ```
 
@@ -49,6 +50,107 @@ map.on('load', function() {
 
 ```
 
+
+<a id="LoadMSUImages"></a>
+
+### LoadMSUImages
+
+Creates multiple images from a JSON object and adds them to a map.
+
+<a id="LoadMSUImages-params"></a>
+
+#### Parameters
+
+* map - The map to add the images to.
+* style - JSON object as described in the [structure](#LoadMSUImages-structure) below.
+* callback  - The callback function to be called after the images are added to the map. Supports only one callback for all images. 
+
+
+<a id="LoadMSUImages-structure"></a>
+
+#### Structure
+
+The JSON should have the following structure:
+
+```JSON
+{
+    "canvasFills": [
+        {
+            "id" : "string", // the id for the image
+            // the options for the canvasFill
+            "fillOptions":{ 
+                // the options for the canvasFill
+                // see canvasFill Parameters below
+
+            }
+        }
+    ],
+    "markerImages": [
+        {
+            "id" : "string", // the id for the image
+            // the options for the marker
+            "markerOptions":{ 
+                // the options for the marker
+                // see addMarkerImageToMap Parameters below
+            }
+        }
+    ]
+}
+```
+
+Note that callback for individual images is not supported in this function.
+
+<a id="LoadMSUImages-examples"></a>
+
+#### Example:
+
+```JavaScript
+let MSUImages = {
+    canvasFills: [
+        {"id":'canvasFillImage',
+        fillOptions: {
+            size: 512,
+            backGroundColor: 'rgba(20,20,255,0.5)',
+            factor: 64,
+            keepRepainting: true,
+            lines: [
+                {color:'rgba(230,230,230,1)',type:'esriSFSDiagonalCross',width:8},    
+                {color:'rgba(0,0,0,255)',type:'+',width:8},
+                {color:'rgba(180,150,0,255)',type:'esriSFSForwardDiagonal',width:2},
+                {color:'rgba(255,0,0,255)',type:'esriSFSBackwardDiagonal',width:2},
+                {color:'rgba(100,205,150,255)',type:'esriSFSVertical',width:2},
+                {color:'rgba(200,85,13,255)',type:'esriSFSHorizontal',width:2}
+            ]
+        }}
+    ],
+    markerImages: [
+        {"id":'marker'}, // default marker
+        {"id":'yellow-marker', 
+            markerOptions:{'anchor': 'bottom', 'scale':0.7, 'color':'yellow'}},
+        {"id":'orange-marker', 
+            markerOptions:{ 'anchor': 'bottom', 'scale':1.5, 'color':'orange'}},
+        {"id":'red-marker', 
+            markerOptions:{'anchor': 'bottom', 'scale':2, 'color':'red'}},
+        {"id":'black-marker', 
+            markerOptions:{'anchor':'bottom', 'scale':3, 'color':'black'}}
+    ]
+
+}
+
+map.on('load', function() {
+    LoadMSUImages(MSUImages, map)
+})
+
+// Or use the callback
+
+map.on('load', function() {
+    LoadMSUImages(MSUImages, map, function(){
+        console.log('All images loaded')
+        // run a function that adds layers that use the images
+    })
+})
+
+```
 
 
 <a id="canvasFill"></a>

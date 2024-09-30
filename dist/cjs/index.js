@@ -16,4 +16,5 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./CanvasFill"), exports);
 __exportStar(require("./AddMarkerImage"), exports);
+__exportStar(require("./loader"), exports);
 //# sourceMappingURL=index.js.map
