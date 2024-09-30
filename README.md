@@ -1,5 +1,8 @@
 # MapLibre Symbol Utils
 
+
+[![Version](https://img.shields.io/npm/v/maplibre_symbol_utils)](https://www.npmjs.com/package/maplibre_symbol_utils)
+
 Utility functions for the creation of advanced symbols within MapLibre.
 
 ## Currently available Utilities:
