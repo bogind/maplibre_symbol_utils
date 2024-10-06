@@ -33,8 +33,8 @@ export type { ExtendedStyleJSON as MSUStyleJSON, CanvasFillOptions as StyleCanva
 /**
  * Load MSU images to the map style.
  * @param {MapLibreMap} map - The map to add the images to.
- * @param {ExtendedStyleJSON} style - The style JSON containing the images.
+ * @param {ExtendedStyleJSON | string} style - The style JSON containing the images or a URL to returning it. If a URL is provided, the function will fetch the JSON and call itself with the JSON.
  * @param {Function} callback - The callback function to be called after the images are added to the map.
  */
-export declare function LoadMSUImages(map: MapLibreMap, style: ExtendedStyleJSON, callback?: Function): void;
+export declare function LoadMSUImages(map: MapLibreMap, style: ExtendedStyleJSON | string, callback?: Function): void;
 export default LoadMSUImages;

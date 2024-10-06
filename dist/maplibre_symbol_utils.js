@@ -439,11 +439,21 @@ var maplibre_symbol_utils = (function (exports, maplibreGl) {
     /**
      * Load MSU images to the map style.
      * @param {MapLibreMap} map - The map to add the images to.
-     * @param {ExtendedStyleJSON} style - The style JSON containing the images.
+     * @param {ExtendedStyleJSON | string} style - The style JSON containing the images or a URL to returning it. If a URL is provided, the function will fetch the JSON and call itself with the JSON.
      * @param {Function} callback - The callback function to be called after the images are added to the map.
      */
     function LoadMSUImages(map, style, callback) {
         try {
+            // If the style is a URL, fetch the JSON and call the function again.
+            // This is pretty lazy, but it works.
+            if (typeof style === 'string') {
+                fetch(style)
+                    .then((response) => response.json())
+                    .then((data) => {
+                    LoadMSUImages(map, data, callback);
+                });
+                return;
+            }
             if (style.canvasFills) {
                 style.canvasFills.forEach((fill) => {
                     if (!map.hasImage(fill.id)) {

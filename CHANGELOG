@@ -1,5 +1,12 @@
 # Changelog
 
+## [Version 0.1.3] - 2024-10-06
+
+### Added
+
+- LoadMSUImages now allows for using a URL to a JSON file
+
+
 ## [Version 0.1.2] - 2024-09-30
 
 ### Added
