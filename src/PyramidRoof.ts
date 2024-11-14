@@ -4,7 +4,13 @@ import { StyleExpression, isExpression, Expression, createExpression } from '@ma
 //import {VectorTileFeature} from '@mapbox/vector-tile';
 import {mat3, vec3} from 'gl-matrix';
 
-
+/**
+ * Options for the pyramid roof layer stroke
+ * @typedef {Object} RoofStrokeOptions
+ * @property {string} [color] - The color of the stroke
+ * @property {number} [width] - The width of the stroke
+ * @property {number} [opacity] - The opacity of the stroke
+ */
 declare type RoofStrokeOptions = {
     color?: string;
     width?: number;
@@ -27,10 +33,21 @@ declare type mat4 =
    number, number, number, number]
 | Float32Array;
 
+/**
+ * Options for the pyramid roof layer
+ * @typedef {Object} RoofOptions
+ * @property {string} id - The id of the layer
+ * @property {string} source - The id of the source
+ * @property {FilterSpecification} [filter] - The filter to apply to the layer
+ * @property {string} [color] - The color of the roof
+ * @property {RoofStrokeOptions} [stroke] - The stroke options for the roof
+ * @property {number | number[] | string[] | Expression} [base] - The base height of the roof
+ * @property {number | number[] | string[] | Expression} [height] - The height of the roof
+ * @property {MapLibreMap} [map] - The map object
+ */
 declare type RoofOptions = {
     id: string;
     source: string;
-    sourceLayer?: string;
     filter?: FilterSpecification | null | undefined;
     color?: string;
     stroke?: RoofStrokeOptions;
@@ -40,6 +57,33 @@ declare type RoofOptions = {
 
 }
 
+/**
+ * A custom layer that renders pyramid roofs on top of buildings
+ * @class
+ * @implements {CustomLayerInterface}
+ * @param {RoofOptions} params - The options for the pyramid roof layer
+ * @example
+ * // Use default base and height values
+ * const pyramidRoof = new PyramidRoof({
+ *      id: 'pyramid-roof',
+ *      source: 'buildings',
+ *      color: '#ff0000',
+ *      base: 0,
+ *      height: 10
+ *  });
+ * map.addLayer(pyramidRoof);
+ * @example
+ * // use expressions for base and height
+ * const pyramidRoof = new PyramidRoof({
+ *      id: 'pyramid-roof',
+ *      source: 'buildings',
+ *      color: '#ff0000',
+ *      height: ['+', ['get', 'extrusion_height'], 15],
+        base: ['get', 'extrusion_height'],
+ * });
+ * map.addLayer(pyramidRoof);
+ */
+
 export class PyramidRoof implements CustomLayerInterface{
 
     id: string;
@@ -48,7 +92,6 @@ export class PyramidRoof implements CustomLayerInterface{
     map?: MapLibreMap;
     filterFunction?: FilterSpecification | null | undefined;
     sourceName: string;
-    sourceLayer?: string | undefined;
     color?: number[] | string;
     strokeColor?: number[] | string;
     strokeWidth?: number;
@@ -71,7 +114,6 @@ export class PyramidRoof implements CustomLayerInterface{
     constructor(params: RoofOptions) {
         this.id = params.id;
         this.sourceName = params.source;
-        this.sourceLayer = params.sourceLayer ? params.sourceLayer : undefined;
         this.filterFunction = params.filter !== undefined ? params.filter : null;
         this.color = params.color;
         this.strokeColor = params.stroke?.color;
@@ -82,7 +124,7 @@ export class PyramidRoof implements CustomLayerInterface{
         
         // Accept only geojson sources
         this.checkSourceType(this.sourceName);
-        
+
         if(isExpression(params.base)){
             let baseExpression = createExpression(params.base)
             if(baseExpression.result === 'error') {
@@ -155,9 +197,6 @@ export class PyramidRoof implements CustomLayerInterface{
                 const filter: FilterSpecification = this.filterFunction;
                 options['filter'] = filter;
             } 
-            if(this.sourceLayer){
-                options['sourceLayer'] = this.sourceLayer;
-            }
             features = this.map.querySourceFeatures(this.sourceName, options);
             if(features.length > 0){
                 
