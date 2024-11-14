@@ -79,6 +79,10 @@ export class PyramidRoof implements CustomLayerInterface{
         this.strokeOpacity = params.stroke?.opacity || 1;
         this.renderedEdges = new Set(); 
         this.renderedSides = new Set();
+        
+        // Accept only geojson sources
+        this.checkSourceType(this.sourceName);
+        
         if(isExpression(params.base)){
             let baseExpression = createExpression(params.base)
             if(baseExpression.result === 'error') {
@@ -100,6 +104,19 @@ export class PyramidRoof implements CustomLayerInterface{
             this.height = typeof params.height === 'string' || Array.isArray(params.height) ? createExpression(params.height) : Number(params.height);
         }
         
+    }
+
+    checkSourceType(sourceName: string) {
+        if (!this.map) {
+            return;
+        }
+        let source = this.map.getSource(sourceName);
+        if (!source) {
+            return;
+        }
+        if (source.type !== 'geojson') {
+            throw new Error('Source type must be "geojson"');
+        }
     }
 
 
