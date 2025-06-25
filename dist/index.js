@@ -1,3 +1,4 @@
 export * from './CanvasFill';
 export * from './AddMarkerImage';
+export * from './PyramidRoof';
 //# sourceMappingURL=index.js.map
